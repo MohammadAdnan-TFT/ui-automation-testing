@@ -1,0 +1,20 @@
+{
+  "name": "ui-testing",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test1": "cross-env JEST_HEADLESS=true jest",
+    "test2": "cross-env JEST_HEADLESS=false jest"
+  },
+  "keywords": [],
+  "author": "Mohammad Adnan",
+  "license": "ISC",
+  "devDependencies": {
+    "@faker-js/faker": "^8.1.0",
+    "cross-env": "^7.0.3",
+    "jest": "^29.7.0",
+    "jest-html-reporter": "^3.10.2",
+    "jest-puppeteer": "^9.0.1"
+  }
+}

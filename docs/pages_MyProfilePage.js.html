@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: pages/MyProfilePage.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: pages/MyProfilePage.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * @module MyProfilePage
+ */
+
+const selectors = require('../selectors/MyProfilePageSelectors.js');
+const urlAfterDeleting = `https://github.com/test-automation-acc?tab=repositories`;
+
+/**
+ * Represents the MyProfilePage class for GitHub automation.
+ * @class
+ */
+class MyProfilePage {
+    /**
+     * Search for a user on GitHub.
+     * @async
+     * @param {object} secondaryProfileDetails - The user's details for searching.
+     * @returns {Promise&lt;void>}
+     */
+
+    async searchUser(secondaryProfileDetails) {
+
+        await page.reload();
+        await page.waitForSelector(selectors.searchBarSelector, { visible: true });
+        await page.click(selectors.searchBarSelector);
+
+        await page.keyboard.down('Control');
+        await page.keyboard.press('A');
+        await page.keyboard.up('Control');
+        await page.keyboard.press('Backspace');
+
+
+        await page.waitForSelector(selectors.searchBarInputSelector, { visible: true });
+        await page.type(selectors.searchBarInputSelector, secondaryProfileDetails.userName)
+
+        await Promise.all([
+            page.keyboard.press('Enter'),
+            page.waitForNavigation()
+        ]);
+
+        const profileHandle = await page.waitForXPath(selectors.userProfileXPath, { visible: true });
+        await Promise.all([
+            profileHandle.click(),
+            page.waitForNavigation()
+        ]);
+
+    }
+
+    /**
+     * Create a new repository on GitHub.
+     * @async
+     * @param {string} newRepoName - The name of the new repo to create.
+     * @returns {Promise&lt;void>}
+     */
+    async createNewRepo(newRepoName) {
+
+        const typ = await page.waitForXPath(selectors.repoNameInputSelector1, { visible: true });
+        await typ.type(newRepoName);
+
+        const createRepoHandle = await page.waitForXPath(selectors.createRepoButtonXPath1, { visible: true });
+        await Promise.all([
+            createRepoHandle.click(),
+            page.waitForNavigation()
+        ]);
+
+        await page.waitForSelector(selectors.settingsSelector, { visible: true });
+        await Promise.all([
+            page.click(selectors.settingsSelector),
+            page.waitForNavigation()
+        ]);
+
+    }
+
+    /**
+     * Delete a new repository on GitHub.
+     * @async
+     * @param {object} primaryProfileDetails - The user's details for deleting a repo.
+     * @returns {Promise&lt;void>}
+     */
+    async deleteNewRepo(primaryProfileDetails, newRepoName) {
+
+        await page.waitForSelector(selectors.deleteButtonSelector, { visible: true });
+        await page.click(selectors.deleteButtonSelector);
+
+        const delete1Handle = await page.waitForXPath(selectors.deleteRepoProceedXPath, { visible: true });
+        await delete1Handle.click();
+
+        const readProceedHandle = await page.waitForXPath(selectors.readAndUnderstandXPath, { visible: true });
+        await readProceedHandle.click();
+
+        await page.waitForSelector(selectors.verificationFeildInputSelector, { visible: true });
+        await page.type(selectors.verificationFeildInputSelector, `${primaryProfileDetails.userName}/${newRepoName}`);
+
+        await page.waitForSelector(selectors.deleteRepoConfirmSelector, { visible: true });
+        await page.click(selectors.deleteRepoConfirmSelector);
+        await page.waitForNavigation();
+
+        const url = page.url();
+        expect(url).toBe(urlAfterDeleting);
+
+    }
+
+}
+module.exports = MyProfilePage;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-BillPayPage.html">BillPayPage</a></li><li><a href="module-CartPage.html">CartPage</a></li><li><a href="module-CheckoutPage.html">CheckoutPage</a></li><li><a href="module-LoginPage.html">LoginPage</a></li><li><a href="module-LogoutPage.html">LogoutPage</a></li><li><a href="module-MyProfilePage.html">MyProfilePage</a></li><li><a href="module-OpenNewAccountPage.html">OpenNewAccountPage</a></li><li><a href="module-ProductsPage.html">ProductsPage</a></li><li><a href="module-TransferFundsPage.html">TransferFundsPage</a></li><li><a href="module-UserProfilePage.html">UserProfilePage</a></li></ul><h3>Classes</h3><ul><li><a href="module-BillPayPage-BillPayPage.html">BillPayPage</a></li><li><a href="module-CartPage-CartPage.html">CartPage</a></li><li><a href="module-CheckoutPage-CheckoutPage.html">CheckoutPage</a></li><li><a href="module-LoginPage-LoginPage.html">LoginPage</a></li><li><a href="module-LogoutPage-LogoutPage.html">LogoutPage</a></li><li><a href="module-MyProfilePage-MyProfilePage.html">MyProfilePage</a></li><li><a href="module-OpenNewAccountPage-OpenNewAccountPage.html">OpenNewAccountPage</a></li><li><a href="module-ProductsPage-ProductsPage.html">ProductsPage</a></li><li><a href="module-TransferFundsPage-TransferFundsPage.html">TransferFundsPage</a></li><li><a href="module-UserProfilePage-UserProfilePage.html">UserProfilePage</a></li></ul><h3>Global</h3><ul><li><a href="global.html#takeScreenShot">takeScreenShot</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Thu Oct 12 2023 14:39:25 GMT+0530 (India Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

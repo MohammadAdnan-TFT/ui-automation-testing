@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: pages/LoginPage.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: pages/LoginPage.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * @module LoginPage
+*/
+const selectors = require('../selectors/LoginPageSelector.js');
+const paraBankVerifyLoginMsg = "Your account was created successfully. You are now logged in.";
+/**
+ * Represents the LoginPage class for GitHub automation.
+ * @class
+ */
+class LoginPage {
+    /**
+     * Navigate to the login page.
+     * @async
+     * @param {string} url - The url of website to navigate.
+     * @returns {Promise&lt;void>}
+     */
+    async visit(url) {
+        await Promise.all([
+            page.waitForNavigation(),
+            page.goto(url)
+        ]);
+    }
+
+    /**
+    * Sign up with user details in ParaBank.
+    * @async
+    * @param {Object} paraBankUserDetails - User details to sign up with
+    * @param {Object} paraBankCredentials - User credentials to sign up with
+    * @returns {Promise&lt;void>}
+    */
+    async paraBankSignUp(paraBankUserDetails, paraBankCredentials) {
+
+        const register = await page.waitForXPath(selectors.bankRegisterAccountXPath, { visible: true })
+        await Promise.all([
+            register.click(),
+            page.waitForNavigation()
+        ]);
+
+
+        await page.waitForSelector(selectors.bankfirstNameInputSelector, { visible: true });
+        await page.type(selectors.bankfirstNameInputSelector, paraBankUserDetails.firstName);
+        await page.type(selectors.banklastNameInputSelector, paraBankUserDetails.lastName);
+        await page.type(selectors.bankaddressInputSelector, paraBankUserDetails.address);
+        await page.type(selectors.bankcityInputSelector, paraBankUserDetails.city);
+        await page.type(selectors.bankstateInputSelector, paraBankUserDetails.state);
+        await page.type(selectors.bankpostInputCodeSelector, paraBankUserDetails.post);
+        await page.type(selectors.bankphoneNumberInputSelector, paraBankUserDetails.phone);
+        await page.type(selectors.bankssnInputSelector, paraBankUserDetails.ssn);
+        await page.type(selectors.bankUserNameInputSelector, paraBankCredentials.userName);
+        await page.type(selectors.bankPasswordInputSelector, paraBankCredentials.password);
+        await page.type(selectors.bankconfirmPassInputSelector, paraBankCredentials.password);
+
+        await page.waitForSelector(selectors.bankregisterButtonSelector, { visible: true });
+        await Promise.all([
+            page.click(selectors.bankregisterButtonSelector, { visible: true }),
+            page.waitForNavigation()
+        ]);
+
+        const verifyHandle = await page.waitForXPath(selectors.bankVerifyLoginSelector);
+        const verify = await page.evaluate((el) => el.textContent, verifyHandle);
+        expect(verify).toBe(paraBankVerifyLoginMsg);
+
+    }
+
+    /**
+     * Log in to GitHub using provided details.
+     * @async
+     * @param {object} gitHubPrimaryProfileDetails - The user's login details.
+     * @returns {Promise&lt;void>}
+     */
+    async gitHubLogin(gitHubPrimaryProfileDetails) {
+
+        const signInHandle = await page.waitForXPath(selectors.gitSignInXPath, { visible: true });
+        await Promise.all([
+            signInHandle.click(),
+            page.waitForNavigation()
+        ]);
+
+        await page.waitForSelector(selectors.gitUserNameInputSelector, { visible: true });
+        await page.type(selectors.gitUserNameInputSelector, gitHubPrimaryProfileDetails.userName);
+        await page.type(selectors.gitPasswordInputSelector, gitHubPrimaryProfileDetails.password);
+
+
+        await page.waitForSelector(selectors.gitSignInButtonSelector, { visible: true });
+        await Promise.all([
+            page.click(selectors.gitSignInButtonSelector),
+            page.waitForNavigation()
+        ]);
+    }
+
+    /**
+     * Sign up with user details into ToolShop.
+     * @async
+     * @param {object} toolShopUserDetails - The user's details for registration.
+     * @param {object} toolShopCredentials - The user's credentials.
+     * @returns {Promise&lt;void>}
+     */
+    async toolShopSignUp(toolShopUserDetails, toolShopCredentials) {
+
+        await page.waitForSelector(selectors.firstNameInputSelector, { visible: true });
+        await page.type(selectors.firstNameInputSelector, toolShopUserDetails.firstName);
+        await page.type(selectors.lastNameInputSelector, toolShopUserDetails.lastName);
+
+        await page.focus(selectors.dobSelector);
+        await page.type(selectors.dobSelector, selectors.dateOfBirth);
+
+        await page.type(selectors.addressInputSelector, toolShopUserDetails.address);
+        await page.type(selectors.postInputCodeSelector, toolShopUserDetails.post);
+        await page.type(selectors.cityInputSelector, toolShopUserDetails.city);
+        await page.type(selectors.stateInputSelector, toolShopUserDetails.state);
+
+        await page.waitForSelector(selectors.countryDropDownSelector, { visible: true });
+        await page.select(selectors.countryDropDownSelector, selectors.countrySelectedOptionValue);
+
+        await page.type(selectors.phoneNumberInputSelector, toolShopUserDetails.phone);
+        await page.type(selectors.emailInputSelector, toolShopCredentials.email);
+        await page.type(selectors.passwordInputSelector, toolShopCredentials.password);
+
+        await Promise.all([
+            page.click(selectors.registerButtonSelector, { visible: true }),
+            page.waitForNavigation()
+        ]);
+    }
+
+    /**
+     * Logs in with user credentials into ToolShop.
+     * @async
+     * @param {object} toolShopCredentials - The user's credentials to sign in.
+     * @returns {Promise&lt;void>}
+     */
+    async toolShopLogin(toolShopCredentials) {
+
+        await page.waitForSelector(selectors.emailInputSelector, { visible: true });
+        await page.type(selectors.emailInputSelector, toolShopCredentials.email);
+        await page.type(selectors.passwordInputSelector, toolShopCredentials.password);
+
+
+        await page.click(selectors.signInButtonSelector, { visible: true });
+        await Promise.all([
+            page.click(selectors.signInButtonSelector),
+            page.waitForNavigation()
+        ]);
+
+        const homeH = await page.waitForXPath(selectors.homeButtonXPath, { visible: true });
+        const isLoggedIn = await page.evaluate((el) => el.textContent, homeH);
+        expect(isLoggedIn).not.toBe(null);
+
+        const home = await page.waitForXPath(selectors.homeButtonXPath, { visible: true });
+        await home.click();
+        await page.waitForNavigation()
+
+
+    }
+
+
+
+
+}
+module.exports = LoginPage;
+
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-BillPayPage.html">BillPayPage</a></li><li><a href="module-CartPage.html">CartPage</a></li><li><a href="module-CheckoutPage.html">CheckoutPage</a></li><li><a href="module-LoginPage.html">LoginPage</a></li><li><a href="module-LogoutPage.html">LogoutPage</a></li><li><a href="module-MyProfilePage.html">MyProfilePage</a></li><li><a href="module-OpenNewAccountPage.html">OpenNewAccountPage</a></li><li><a href="module-ProductsPage.html">ProductsPage</a></li><li><a href="module-TransferFundsPage.html">TransferFundsPage</a></li><li><a href="module-UserProfilePage.html">UserProfilePage</a></li></ul><h3>Classes</h3><ul><li><a href="module-BillPayPage-BillPayPage.html">BillPayPage</a></li><li><a href="module-CartPage-CartPage.html">CartPage</a></li><li><a href="module-CheckoutPage-CheckoutPage.html">CheckoutPage</a></li><li><a href="module-LoginPage-LoginPage.html">LoginPage</a></li><li><a href="module-LogoutPage-LogoutPage.html">LogoutPage</a></li><li><a href="module-MyProfilePage-MyProfilePage.html">MyProfilePage</a></li><li><a href="module-OpenNewAccountPage-OpenNewAccountPage.html">OpenNewAccountPage</a></li><li><a href="module-ProductsPage-ProductsPage.html">ProductsPage</a></li><li><a href="module-TransferFundsPage-TransferFundsPage.html">TransferFundsPage</a></li><li><a href="module-UserProfilePage-UserProfilePage.html">UserProfilePage</a></li></ul><h3>Global</h3><ul><li><a href="global.html#takeScreenShot">takeScreenShot</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Thu Oct 12 2023 14:39:25 GMT+0530 (India Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
